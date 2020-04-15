@@ -19,13 +19,13 @@ import (
 
 func TestORAM(t *testing.T) {
 	//Generate Data
-	data1 := oram.RandomBytes(120)
+	data1 := oram.RandomBytes(4096)
 	j := 0
 	cnt := 0
-	for j < 15 {
+	for j < 512 {
 		k := 0
 		for k < 8 {
-			data1[cnt] = byte(50 + j)
+			data1[cnt] = byte(10 + j)
 			cnt++
 			k++
 		}
@@ -40,7 +40,7 @@ func TestORAM(t *testing.T) {
 	ret, _ := Access(0, data2)
 	ret, _ = Access(0, nil)
 	i := 1
-	for i < 14 {
+	for i < 510 {
 		ret, _ = Access(i, data2)
 		ret, _ = Access(i, nil)
 		if bytes.Compare(data2, ret) == 0 {
