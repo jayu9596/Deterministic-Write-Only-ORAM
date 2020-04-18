@@ -17,30 +17,36 @@ type Block struct {
 	Data []byte
 }
 
+//Bucket : Bucket structure used to store the number of blocks
+type Bucket struct {
+	Size   int
+	Blocks []Block
+}
+
 // var mydb = make([]Block, 1000)
-var mydb = []Block{}
+var mydb = []Bucket{}
 
 //getDB : returns database
-func GetDB() []Block {
+func GetDB() []Bucket {
 	return mydb
 }
 
 //Read : reads data at index
-func Read(index int) (data Block, err error) {
+func Read(index int, subIndex int) (data Block, err error) {
 	// fmt.Println(index)
-	return mydb[index], nil
+	return mydb[index].Blocks[subIndex], nil
 }
 
 //Write :should overwrite data at index
-func Write(index int, block Block) (err error) {
+func Write(index int, subIndex int, block Block) (err error) {
 	// fmt.Println(index)
-	mydb[index] = block
+	mydb[index].Blocks[subIndex] = block
 	return nil
 }
 
 //Append :should Append data
-func Append(index int, block Block) (err error) {
+func Append(index int, bucket Bucket) (err error) {
 	// block := Block{index, ciphertext, false}
-	mydb = append(mydb, block)
+	mydb = append(mydb, bucket)
 	return nil
 }
