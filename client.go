@@ -31,12 +31,9 @@ var maxPath = 1000
 
 var maxBucketSize = 10
 
+//For debugging purpose
 var maxSizeOfStash = 0
-
-//PositionMap : PositionMap structure used to store the oram.Block information
-// type PositionMap struct {
-// 	Map []int
-// }
+var maxSizeOfStashAfterWrite = 0
 
 //Pair : Pair data structure
 type Pair struct {
@@ -61,41 +58,33 @@ func StashClear() {
 	stash = make([]oram.Block, 0)
 }
 
-//StashClear : Clear the stash
+//GetMaxStashSize : returns max stash size at any point of time
+//For debugging purpose
 func GetMaxStashSize() int {
 	return maxSizeOfStash
 }
 
-//StashSet : set the value of stash at particular index
-func StashSet(index int, data oram.Block) {
-	stash[index] = data
-	if len(stash) > int(math.Log2(float64(maxSize))+1)*maxBucketSize {
-		println("Overflowed!")
-		println(len(stash))
-	}
+//GetmaxSizeOfStashAfterWrite : returns max stash size at any point of time after write operation is performed
+//For debugging purpose
+func GetmaxSizeOfStashAfterWrite() int {
+	return maxSizeOfStashAfterWrite
 }
 
 //StashDelete : delete entry in stash
 func StashDelete(index int) {
-	//TODO:delete element at this index
 	stash = append(stash[:index], stash[index+1:]...)
 }
 
 //StashPush : Add entry in stash
 func StashPush(data oram.Block) {
 	stash = append(stash, data)
-	if len(stash) > int(math.Log2(float64(maxSize))+1)*maxBucketSize {
-		println("Overflowed!")
-		println(len(stash))
-	}
+	// if len(stash) > int(math.Log2(float64(maxSize))+1)*maxBucketSize {
+	// println("Overflowed!")
+	// println(len(stash))
+	// }
 	if maxSizeOfStash < len(stash) {
 		maxSizeOfStash = len(stash)
 	}
-}
-
-//StashPop : delete entry in stash
-func StashPop(index int) {
-	stash = stash[1:]
 }
 
 //setMaxBucketSize : set setMaxBucketSize
@@ -174,6 +163,7 @@ func ReadPath(index int) (oram.Block, error) {
 			flag = false
 		}
 		j := 0
+		//This Loop is for Z blocks in a bucket
 		for j < maxBucketSize {
 			block, _ := oram.Read(int(currNode), j)
 			//Read and Store the block in the stash
@@ -227,6 +217,7 @@ func Writepath(path int) (ciphertext []oram.Block, err error) {
 			flag = false
 		}
 		j := 0
+		//This loop is for Z blocks in a Bucket
 		for j < maxBucketSize {
 			//find and write a block which can fit in this node
 			found := false
@@ -248,6 +239,9 @@ func Writepath(path int) (ciphertext []oram.Block, err error) {
 			j++
 		}
 		currNode = (currNode - 1) / 2
+	}
+	if maxSizeOfStashAfterWrite < len(stash) {
+		maxSizeOfStashAfterWrite = len(stash)
 	}
 	return nil, nil
 }

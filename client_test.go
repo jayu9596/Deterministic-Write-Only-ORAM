@@ -19,12 +19,12 @@ import (
 
 func TestORAM(t *testing.T) {
 	//Generate Data
-	data1 := oram.RandomBytes(8128)
+	data1 := oram.RandomBytes(4096)
 	setMaxBucketSize(8)
 	j := 0
 	cnt := 0
 	// valueFeeder := 0
-	for j < 127 {
+	for j < 64 {
 		k := 0
 		for k < 8 {
 			l := 0
@@ -39,7 +39,7 @@ func TestORAM(t *testing.T) {
 	}
 
 	data2 := data1[0:8]
-	_ = ServerUploadData(data1)
+	_ = ServerUploadData(data1[:4032])
 	// oldDB := GetMyDB()
 	// fmt.Println("Old DB")
 	// fmt.Println(oldDB)
@@ -49,17 +49,25 @@ func TestORAM(t *testing.T) {
 	ret, _ = Access(0, nil)
 	p = GetStash()
 	fmt.Println(p)
-	i := 1
-	for i < 126 {
+	i := 2
+	for i < 62 {
 		ret, _ = Access(i, data2)
 		ret, _ = Access(i, nil)
-		p = GetStash()
-		fmt.Println(p)
+		// p = GetStash()
+		// fmt.Println(p)
 		if bytes.Compare(data2, ret) == 0 {
-			fmt.Println("Pass")
+			// fmt.Println("Pass")
 		} else {
-			fmt.Println("Fail")
+			// fmt.Println("Fail")
 		}
+		// fmt.Print("Completed ")
+		fmt.Println(i)
+		// if i == 101 {
+		// fmt.Println("Checkpoint Reached")
+		// }
+		mxSize := GetmaxSizeOfStashAfterWrite()
+		mxSize += 1
+		mxSize -= 1
 		i++
 	}
 
@@ -71,4 +79,7 @@ func TestORAM(t *testing.T) {
 	fmt.Println(GetStash())
 	fmt.Println("Max Stash Size at Any point is")
 	fmt.Println(GetMaxStashSize())
+	fmt.Println("Max Stash Size at Any point after write is")
+	fmt.Println(GetmaxSizeOfStashAfterWrite())
+
 }
